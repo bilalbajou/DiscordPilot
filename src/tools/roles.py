@@ -298,3 +298,57 @@ async def discord_delete_role(
 
 # Les rôles managed=True (intégrations, bots) sont protégés — Discord refuse
 # leur suppression via API, d'où la vérification préventive avant role.delete().
+
+
+@mcp.tool(annotations={"destructiveHint": False})
+async def discord_update_role_permissions(
+    guild_id: str = Field(description="ID du serveur Discord"),
+    role_id: str = Field(description="ID du rôle à modifier"),
+    permissions: dict[str, bool] = Field(
+        description="Dictionnaire des permissions à modifier (ex: {'manage_messages': true, 'kick_members': false})"
+    ),
+    reason: Optional[str] = Field(
+        default=None,
+        description="Raison de la modification (logs d'audit)",
+    ),
+) -> str:
+    """Met à jour les permissions d'un rôle.
+
+    Les permissions non spécifiées dans le dictionnaire resteront inchangées.
+    Noms de permissions valides (snake_case) : administrator, manage_guild, manage_channels, manage_roles, manage_messages, kick_members, ban_members, etc.
+    """
+    try:
+        client = await ensure_ready()
+
+        guild = client.get_guild(int(guild_id)) or await client.fetch_guild(int(guild_id))
+
+        role = guild.get_role(int(role_id))
+        if role is None:
+            return f"❌ Rôle introuvable (role_id={role_id}). Vérifiez l'ID avec discord_list_roles."
+
+        perms = role.permissions
+        
+        # update() on discord.Permissions updates the values based on kwargs
+        try:
+            perms.update(**permissions)
+        except TypeError as e:
+            return f"❌ Nom de permission invalide : {str(e)}"
+
+        await role.edit(permissions=perms, reason=reason)
+
+        return json.dumps({
+            "success": True,
+            "id": str(role.id),
+            "name": role.name,
+            "updated_permissions": permissions
+        }, indent=2, ensure_ascii=False)
+
+    except discord.Forbidden:
+        return (
+            "❌ Permission refusée. Le bot doit avoir la permission 'Gérer les rôles' "
+            "et son rôle doit être supérieur au rôle à modifier."
+        )
+    except ValueError:
+        return "❌ IDs invalides : guild_id et role_id doivent être des entiers numériques."
+    except Exception as e:
+        return format_error(e)
