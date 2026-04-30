@@ -1,5 +1,12 @@
 import asyncio
 import logging
+import sys
+from pathlib import Path
+
+# Ensure project root is on sys.path when launched via MCP (cwd may differ)
+_project_root = str(Path(__file__).resolve().parent.parent)
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
 
 from dotenv import load_dotenv
 from fastmcp import FastMCP
@@ -11,7 +18,7 @@ from src.tools.members import mcp as members_mcp
 from src.tools.roles import mcp as roles_mcp
 from src.tools.moderation import mcp as moderation_mcp
 
-load_dotenv()
+load_dotenv(dotenv_path=Path(_project_root) / ".env")
 
 logging.basicConfig(
     level=logging.INFO,

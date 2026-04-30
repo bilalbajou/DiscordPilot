@@ -71,5 +71,16 @@ To verify the server is connected, run:
 claude mcp list
 ```
 
+## Example Prompts for Claude Code
+
+Once the MCP is connected, you can ask Claude Code to manage your Discord server. Here are some example prompts you can try:
+
+- *"List all the Discord servers (guilds) the bot is currently in."*
+- *"Send a message saying 'Hello everyone!' to the #general channel."*
+- *"Create a new text channel named 'bot-testing'."*
+- *"Fetch the last 10 messages from the #announcements channel."*
+- *"Show me a list of all members who have the 'Admin' role."*
+- *"Kick the user @johndoe from the server for violating rules."*
+
 ## License
 MIT
