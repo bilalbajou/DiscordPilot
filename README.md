@@ -58,13 +58,13 @@ To add this MCP server to Claude Code, run the following command inside the `Dis
 
 ```bash
 # On Windows:
-claude mcp add discord-pilot .venv\Scripts\python.exe src\server.py
+claude mcp add discord-pilot -e DISCORD_BOT_TOKEN="YOUR_BOT_TOKEN" .venv\Scripts\python.exe src\server.py
 
 # On macOS/Linux:
-claude mcp add discord-pilot .venv/bin/python src/server.py
+claude mcp add discord-pilot -e DISCORD_BOT_TOKEN="YOUR_BOT_TOKEN" .venv/bin/python src\server.py
 ```
 
-*(Note: Claude Code will automatically pick up your `DISCORD_BOT_TOKEN` from the `.env` file since the server uses `dotenv`)*
+*(Note: If you have already set the `DISCORD_BOT_TOKEN` in your `.env` file, you can omit the `-e DISCORD_BOT_TOKEN="..."` part, as the server will automatically read it!)*
 
 To verify the server is connected, run:
 ```bash
